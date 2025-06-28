@@ -1073,10 +1073,10 @@ public class DashboardView {
 
 - Menampilkan semua data menu dari database dalam bentuk tabel
 - Menyediakan tombol-tombol aksi untuk Admin:  
-- ➕ Tambah Menu  
-- ✏️ Edit Menu  
-- 🗑 Hapus Menu  
-- 🔄 Ubah Status (Tersedia / Tidak Tersedia)  
+  - ➕ Tambah Menu  
+  - ✏️ Edit Menu  
+  - 🗑 Hapus Menu  
+  - 🔄 Ubah Status (Tersedia / Tidak Tersedia)  
 - Terhubung dengan database melalui `TodoOperations`  
 - Hanya pengguna dengan role `Admin` yang bisa melihat & mengelola menu
 
