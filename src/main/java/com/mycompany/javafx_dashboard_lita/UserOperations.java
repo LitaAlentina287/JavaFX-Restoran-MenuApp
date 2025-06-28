@@ -7,35 +7,7 @@ public class UserOperations {
 
     public UserOperations() throws SQLException {
         connection = DatabaseConnection.getConnection();
-        ensureDefaultAdmin(); // Tambahkan pengecekan admin default saat objek dibuat
-    }
-
-    // Menambahkan akun Admin default jika belum ada
-    private void ensureDefaultAdmin() {
-        String defaultAdminUsername = "admin";
-        String defaultAdminPassword = "admin123";
-        String defaultAdminRole = "Admin";
-
-        try {
-            String checkSql = "SELECT * FROM users WHERE username = ?";
-            PreparedStatement checkStmt = connection.prepareStatement(checkSql);
-            checkStmt.setString(1, defaultAdminUsername);
-            ResultSet resultSet = checkStmt.executeQuery();
-
-            if (!resultSet.next()) {
-                String insertSql = "INSERT INTO users (username, password, role) VALUES (?, ?, ?)";
-                PreparedStatement insertStmt = connection.prepareStatement(insertSql);
-                insertStmt.setString(1, defaultAdminUsername);
-                insertStmt.setString(2, defaultAdminPassword);
-                insertStmt.setString(3, defaultAdminRole);
-                insertStmt.executeUpdate();
-                System.out.println("Admin default berhasil dibuat (admin / admin123).");
-            } else {
-                System.out.println("Admin default sudah tersedia.");
-            }
-        } catch (SQLException e) {
-            System.out.println("Gagal memastikan admin default: " + e.getMessage());
-        }
+        // ensureDefaultAdmin(); -> dihapus karena admin sudah dibuat manual
     }
 
     // Register User
@@ -101,7 +73,7 @@ public class UserOperations {
         return null;
     }
 
-    // Update Password
+    // Update Password (opsional, tidak dipakai jika tidak ada fitur di UI)
     public void updatePassword(String username, String newPassword) {
         String query = "UPDATE users SET password = ? WHERE username = ?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
