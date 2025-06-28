@@ -87,9 +87,9 @@ Tonton demo aplikasi di YouTube:
 ## 1. 📄 App.java - Fungsi Utama
 App.java adalah titik masuk utama (main class) dari aplikasi JavaFX kamu. File ini:
 
-✅ Menjalankan aplikasi dengan launch(args)
-✅ Membuat window utama (Stage)
-✅ Menampilkan tampilan login pertama kali melalui LoginView
+- Menjalankan aplikasi dengan launch(args)
+- Membuat window utama (Stage)
+- Menampilkan tampilan login pertama kali melalui LoginView
 
 ```java
 package com.mycompany.javafx_dashboard_lita;
