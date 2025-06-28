@@ -71,18 +71,18 @@ Tonton demo aplikasi di YouTube:
 
 ## 🧩 Kode Program Utama
 
-| File                | Peran                                                              |
-| ------------------- | ------------------------------------------------------------------ |
-| App.java            | Entry point, menampilkan `LoginView`                               |
-| DatabaseConnection  | Koneksi database global                                            |
-| User.java           | Model data pengguna                                                |
-| Todo.java           | Model data menu                                                    |
-| UserOperations.java | Operasi database terkait user (login/register/profile/update)      |
-| TodoOperations.java | Operasi database untuk menu (CRUD dan toggle status)               |
-| LoginView\.java     | UI login dan navigasi ke dashboard atau register                   |
-| RegisterView\.java  | UI pendaftaran user baru                                           |
-| DashboardView\.java | UI utama berdasarkan role (user/admin)                             |
-| TodoView\.java      | UI lengkap CRUD menu untuk admin dengan interaksi pengguna (modal) |
+| **File**               | **Peran / Fungsi Utama**                                                                 |
+|--------------------------|----------------------------------------------------------------------------------------------|
+| `App.java`               | Titik masuk utama aplikasi (entry point). Menampilkan `LoginView` saat aplikasi dibuka.     |
+| `DatabaseConnection.java`| Menyediakan koneksi global ke database MySQL menggunakan JDBC.                              |
+| `User.java`              | Model data pengguna. Menyimpan data `id`, `username`, `password`, dan `role`.               |
+| `Todo.java`              | Model data menu restoran. Berisi data `id`, `title` (nama menu), `description` (harga), dan status. |
+| `UserOperations.java`    | Menangani semua operasi database yang berkaitan dengan user seperti login, register, dan ambil profil. |
+| `TodoOperations.java`    | Operasi database CRUD untuk data menu dan ubah status tersedia/tidak.                       |
+| `LoginView.java`         | UI login pengguna. Mengarahkan ke `DashboardView` jika login berhasil.                      |
+| `RegisterView.java`      | UI untuk mendaftarkan user baru (khusus role `User`, bukan Admin).                         |
+| `DashboardView.java`     | UI utama setelah login. Menampilkan tampilan sesuai dengan peran (Admin/User).             |
+| `TodoView.java`          | UI halaman kelola menu lengkap (CRUD + toggle status) khusus untuk Admin.                  |
 
 
 ---
