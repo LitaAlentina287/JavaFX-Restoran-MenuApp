@@ -36,17 +36,37 @@ Aplikasi Menu Restoran berbasis JavaFX yang memungkinkan pengguna (user) untuk m
 ## 💽 Struktur Database
 
 ```sql
-CREATE TABLE users (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    username VARCHAR(50) NOT NULL,
-    password VARCHAR(100) NOT NULL,
-    role VARCHAR(10) NOT NULL
+CREATE DATABASE todo_system;
+
+USE todo_system;
+
+CREATE TABLE IF NOT EXISTS users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(255) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  role VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE todos (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    title VARCHAR(100),
-    description VARCHAR(100),
-    is_completed BOOLEAN,
+CREATE TABLE IF NOT EXISTS todos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    is_completed BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+```
+
+---
+
+## 📽️ Demo Aplikasi
+Tonton demo aplikasi di YouTube:  
+🔗 (https://youtu.be/klz2-AVIM1Q?si=6h_i4sEySB_GH3p2)
+
+
+---
+
+
+## 🧩 Kode Program Utama
+
+### 📁 File: App.java
+```java
