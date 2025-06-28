@@ -68,5 +68,16 @@ Tonton demo aplikasi di YouTube:
 
 ## 🧩 Kode Program Utama
 
-### 📁 File: App.java
-```java
+| File                | Peran                                                              |
+| ------------------- | ------------------------------------------------------------------ |
+| App.java            | Entry point, menampilkan `LoginView`                               |
+| DatabaseConnection  | Koneksi database global                                            |
+| User.java           | Model data pengguna                                                |
+| Todo.java           | Model data menu                                                    |
+| UserOperations.java | Operasi database terkait user (login/register/profile/update)      |
+| TodoOperations.java | Operasi database untuk menu (CRUD dan toggle status)               |
+| LoginView\.java     | UI login dan navigasi ke dashboard atau register                   |
+| RegisterView\.java  | UI pendaftaran user baru                                           |
+| DashboardView\.java | UI utama berdasarkan role (user/admin)                             |
+| TodoView\.java      | UI lengkap CRUD menu untuk admin dengan interaksi pengguna (modal) |
+
