@@ -14,7 +14,7 @@ Aplikasi Menu Restoran berbasis JavaFX yang memungkinkan pengguna (user) untuk m
 
 - **Admin**  
   Username: `admin`  
-  Password: `admin123`  
+  Password: `123`  
   Bisa mengelola data menu.
 
 - **User**  
@@ -363,7 +363,7 @@ public class Todo {
 UserOperations.java adalah class yang menangani semua operasi database terkait pengguna (user dan admin). File ini:
 
 - Menghubungkan ke database menggunakan DatabaseConnection
-- Memastikan akun admin default (admin / admin123) tersedia secara otomatis
+- Memastikan akun admin default (admin / 123) tersedia secara otomatis
 - Menyediakan fitur register user baru ke database
 - Menyediakan fitur login dengan autentikasi username & password
 - Menyediakan fitur logout sederhana (dengan log)
@@ -379,35 +379,7 @@ public class UserOperations {
 
     public UserOperations() throws SQLException {
         connection = DatabaseConnection.getConnection();
-        ensureDefaultAdmin(); // Tambahkan pengecekan admin default saat objek dibuat
-    }
-
-    // Menambahkan akun Admin default jika belum ada
-    private void ensureDefaultAdmin() {
-        String defaultAdminUsername = "admin";
-        String defaultAdminPassword = "admin123";
-        String defaultAdminRole = "Admin";
-
-        try {
-            String checkSql = "SELECT * FROM users WHERE username = ?";
-            PreparedStatement checkStmt = connection.prepareStatement(checkSql);
-            checkStmt.setString(1, defaultAdminUsername);
-            ResultSet resultSet = checkStmt.executeQuery();
-
-            if (!resultSet.next()) {
-                String insertSql = "INSERT INTO users (username, password, role) VALUES (?, ?, ?)";
-                PreparedStatement insertStmt = connection.prepareStatement(insertSql);
-                insertStmt.setString(1, defaultAdminUsername);
-                insertStmt.setString(2, defaultAdminPassword);
-                insertStmt.setString(3, defaultAdminRole);
-                insertStmt.executeUpdate();
-                System.out.println("Admin default berhasil dibuat (admin / admin123).");
-            } else {
-                System.out.println("Admin default sudah tersedia.");
-            }
-        } catch (SQLException e) {
-            System.out.println("Gagal memastikan admin default: " + e.getMessage());
-        }
+        // Tidak perlu lagi menambahkan admin default
     }
 
     // Register User
@@ -609,7 +581,7 @@ public class TodoOperations {
 - Membuat **form login** yang terdiri dari:
   - Input **username** dan **password**
   - Tombol **Login**
-  - Link ke halaman **Register** (khusus untuk User)
+  - Tautan ke halaman Register (hanya untuk User)
 - Menyediakan **desain UI modern**, meliputi:
   - Efek **shadow**
   - Warna **gradasi biru muda**
@@ -620,7 +592,7 @@ public class TodoOperations {
 
 #### Catatan:
 
-- Akun **Admin** tidak perlu register karena **otomatis dibuat** melalui `UserOperations`.
+- Akun **Admin** sudah pernah dibuat di database secara manual (contoh: Admin / 123).
 - Link **"Register"** hanya ditujukan untuk **User baru**, bukan Admin.
 
 ```java
