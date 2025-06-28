@@ -494,7 +494,7 @@ public class UserOperations {
 
 ---
 
-6. 📄 TodoOperations.java – Operasi Menu Restoran (CRUD)
+## 6. 📄 TodoOperations.java – Operasi Menu Restoran (CRUD)
 TodoOperations.java adalah class yang menangani semua operasi database untuk tabel todos, yang mewakili data menu makanan/minuman di aplikasi restoran ini.
 
 File ini:
@@ -599,11 +599,11 @@ public class TodoOperations {
 
 ---
 
-### 📄 LoginView.java – Tampilan Form Login
+## 7. 📄 LoginView.java – Tampilan Form Login
 
 `LoginView.java` bertanggung jawab untuk menampilkan tampilan **login pengguna** di awal aplikasi.
 
-#### ✅ Fungsi Utama:
+#### Fungsi Utama:
 
 - Menampilkan **judul aplikasi** di bagian atas.
 - Membuat **form login** yang terdiri dari:
@@ -618,7 +618,7 @@ public class TodoOperations {
   - ✅ Jika berhasil login → ditampilkan halaman `DashboardView`
   - ❌ Jika gagal login → muncul pesan kesalahan (popup alert)
 
-#### 🧠 Catatan:
+#### Catatan:
 
 - Akun **Admin** tidak perlu register karena **otomatis dibuat** melalui `UserOperations`.
 - Link **"Register"** hanya ditujukan untuk **User baru**, bukan Admin.
