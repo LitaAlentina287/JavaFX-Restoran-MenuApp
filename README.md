@@ -23,7 +23,10 @@ Aplikasi Menu Restoran berbasis JavaFX yang memungkinkan pengguna (user) untuk m
 
 ## 📦 Fitur Utama
 
-- Login dan Register (khusus user)
+- Login untuk semua pengguna
+- Register hanya untuk User
+- Akun Admin sudah dibuat sebelumnya secara manual (misalnya: Admin / 123), tidak perlu register
+
 - Admin:
   - Tambah menu baru
   - Edit data menu
