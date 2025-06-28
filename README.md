@@ -623,6 +623,681 @@ public class TodoOperations {
 - Akun **Admin** tidak perlu register karena **otomatis dibuat** melalui `UserOperations`.
 - Link **"Register"** hanya ditujukan untuk **User baru**, bukan Admin.
 
+```java
+package com.mycompany.javafx_dashboard_lita;
+
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
+import javafx.stage.Stage;
+
+public class LoginView {
+    private Stage primaryStage;
+    private UserOperations userOperations;
+
+    public LoginView(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+    }
+
+    public BorderPane getView() {
+        BorderPane root = new BorderPane();
+        root.setStyle("-fx-background-color: linear-gradient(to bottom, #ADD8E6, #E0FFFF);");
+
+        VBox mainContainer = new VBox(20);
+        mainContainer.setAlignment(Pos.TOP_CENTER);
+        mainContainer.setPadding(new Insets(30));
+
+        // Judul utama paling atas
+        Label appTitle = new Label("Aplikasi Menu Restoran");
+        appTitle.setFont(Font.font("Verdana", FontWeight.EXTRA_BOLD, FontPosture.REGULAR, 26));
+        appTitle.setTextFill(Color.DARKBLUE);
+        appTitle.setEffect(new DropShadow(3, Color.LIGHTGRAY));
+        appTitle.setStyle("-fx-letter-spacing: 1px;");
+
+        VBox formContainer = new VBox(15);
+        formContainer.setPadding(new Insets(30));
+        formContainer.setAlignment(Pos.CENTER);
+        formContainer.setMaxWidth(400);
+        formContainer.setStyle(
+                "-fx-background-color: white;" +
+                "-fx-background-radius: 15px;" +
+                "-fx-border-radius: 15px;"
+        );
+        formContainer.setEffect(new DropShadow(10, Color.GRAY));
+
+        Label logoLabel = new Label("\uD83D\uDD11");  // emoji kunci
+        logoLabel.setFont(Font.font("Arial", FontWeight.BOLD, 50));
+        logoLabel.setTextFill(Color.DARKBLUE);
+
+        Label titleLabel = new Label("Login");
+        titleLabel.setStyle("-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #00008B;");
+
+        Separator separator = new Separator();
+
+        TextField usernameField = new TextField();
+        usernameField.setPromptText("Username");
+        usernameField.setStyle("-fx-pref-width: 300px; -fx-padding: 10px;");
+
+        PasswordField passwordField = new PasswordField();
+        passwordField.setPromptText("Password");
+        passwordField.setStyle("-fx-pref-width: 300px; -fx-padding: 10px;");
+
+        Button loginButton = new Button("Login");
+        loginButton.setStyle(
+                "-fx-background-color: #00008B;" +
+                "-fx-text-fill: white;" +
+                "-fx-font-size: 14px;" +
+                "-fx-padding: 10px 20px;" +
+                "-fx-background-radius: 10px;"
+        );
+        loginButton.setOnMouseEntered(e -> loginButton.setStyle(
+                "-fx-background-color: #0000CD; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10px 20px; -fx-background-radius: 10px;"));
+        loginButton.setOnMouseExited(e -> loginButton.setStyle(
+                "-fx-background-color: #00008B; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10px 20px; -fx-background-radius: 10px;"));
+
+        Label registerLink = new Label("Belum punya akun? Register di sini.");
+        registerLink.setStyle("-fx-text-fill: #00008B; -fx-underline: true; -fx-cursor: hand;");
+        registerLink.setOnMouseClicked(event -> {
+            RegisterView registerView = new RegisterView(primaryStage);
+            Scene registerScene = new Scene(registerView.getView(), 800, 600);
+            primaryStage.setScene(registerScene);
+        });
+
+        loginButton.setOnAction(e -> {
+            String username = usernameField.getText();
+            String password = passwordField.getText();
+
+            try {
+                userOperations = new UserOperations();
+            } catch (SQLException ex) {
+                Logger.getLogger(LoginView.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            if (userOperations.loginUser(username, password)) {
+                DashboardView dashboardView = new DashboardView(primaryStage, username);
+                Scene dashboardScene = new Scene(dashboardView.getView(), 800, 600);
+                primaryStage.setScene(dashboardScene);
+            } else {
+                showError("Login gagal! Periksa username dan password Anda.");
+            }
+        });
+
+        // Tambahkan ke form login
+        formContainer.getChildren().addAll(logoLabel, titleLabel, separator, usernameField, passwordField, loginButton, registerLink);
+
+        // Tambahkan judul dan form ke tampilan utama
+        mainContainer.getChildren().addAll(appTitle, formContainer);
+        root.setCenter(mainContainer);
+
+        return root;
+    }
+
+    private void showError(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Login Error");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+}
+```
+
+---
+
+## 8. 📄 RegisterView.java - Form Registrasi User
+RegisterView.java adalah tampilan UI yang digunakan untuk pendaftaran akun baru khusus pengguna dengan role User. File ini:
+
+- Menampilkan form registrasi (username & password)
+- Memastikan role yang didaftarkan adalah "User" (bukan admin)
+- Menyimpan data user ke database melalui UserOperations
+- Mengarahkan user kembali ke halaman Login setelah berhasil registrasi
+- Menampilkan notifikasi jika registrasi gagal atau berhasil
+
+```java
+package com.mycompany.javafx_dashboard_lita;
+
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.stage.Stage;
+
+public class RegisterView {
+    private Stage primaryStage;
+    private UserOperations userOperations;
+
+    public RegisterView(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+    }
+
+    public BorderPane getView() {
+        BorderPane root = new BorderPane();
+        root.setStyle("-fx-background-color: linear-gradient(to bottom, #ADD8E6, #E0FFFF);");
+
+        VBox container = new VBox(15);
+        container.setAlignment(Pos.CENTER);
+        container.setPadding(new Insets(30));
+        container.setMaxWidth(400);
+        container.setStyle(
+                "-fx-background-color: white;" +
+                "-fx-background-radius: 15px;" +
+                "-fx-border-radius: 15px;"
+        );
+        container.setEffect(new DropShadow(10, Color.GRAY));
+
+        Label iconLabel = new Label("\uD83D\uDC64"); // Ikon user
+        iconLabel.setFont(Font.font("Arial", FontWeight.BOLD, 50));
+        iconLabel.setTextFill(Color.DARKBLUE);
+
+        Label titleLabel = new Label("Register");
+        titleLabel.setFont(Font.font("Arial", FontWeight.BOLD, 26));
+        titleLabel.setTextFill(Color.DARKBLUE);
+
+        TextField usernameField = new TextField();
+        usernameField.setPromptText("Username");
+        usernameField.setStyle("-fx-pref-width: 300px; -fx-padding: 10px;");
+
+        PasswordField passwordField = new PasswordField();
+        passwordField.setPromptText("Password");
+        passwordField.setStyle("-fx-pref-width: 300px; -fx-padding: 10px;");
+
+        Button registerButton = new Button("Register");
+        registerButton.setStyle(
+                "-fx-background-color: #00008B;" +
+                "-fx-text-fill: white;" +
+                "-fx-font-size: 14px;" +
+                "-fx-padding: 10px 20px;" +
+                "-fx-background-radius: 10px;"
+        );
+        registerButton.setOnMouseEntered(e -> registerButton.setStyle(
+                "-fx-background-color: #0000CD;" +
+                "-fx-text-fill: white;" +
+                "-fx-font-size: 14px;" +
+                "-fx-padding: 10px 20px;" +
+                "-fx-background-radius: 10px;"
+        ));
+        registerButton.setOnMouseExited(e -> registerButton.setStyle(
+                "-fx-background-color: #00008B;" +
+                "-fx-text-fill: white;" +
+                "-fx-font-size: 14px;" +
+                "-fx-padding: 10px 20px;" +
+                "-fx-background-radius: 10px;"
+        ));
+
+        Label loginLink = new Label("Sudah punya akun? Login di sini.");
+        loginLink.setStyle("-fx-text-fill: #00008B; -fx-underline: true; -fx-cursor: hand;");
+        loginLink.setOnMouseClicked(e -> {
+            LoginView loginView = new LoginView(primaryStage);
+            primaryStage.setScene(new Scene(loginView.getView(), 800, 600));
+        });
+
+        registerButton.setOnAction(e -> {
+            String username = usernameField.getText().trim();
+            String password = passwordField.getText().trim();
+            String role = "User"; // Hardcoded role ke User
+
+            try {
+                userOperations = new UserOperations();
+                boolean success = userOperations.registerUser(username, password, role);
+                if (success) {
+                    showInfo("Registrasi berhasil! Silakan login.");
+                    LoginView loginView = new LoginView(primaryStage);
+                    primaryStage.setScene(new Scene(loginView.getView(), 800, 600));
+                } else {
+                    showError("Registrasi gagal! Username sudah digunakan.");
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(RegisterView.class.getName()).log(Level.SEVERE, null, ex);
+                showError("Terjadi kesalahan saat mengakses database.");
+            }
+        });
+
+        container.getChildren().addAll(iconLabel, titleLabel, usernameField, passwordField, registerButton, loginLink);
+        root.setCenter(container);
+        return root;
+    }
+
+    private void showError(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Registrasi Gagal");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void showInfo(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Registrasi Berhasil");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+}
+```
+
+---
+
+## 9. 📄 `DashboardView.java` – Tampilan Beranda Utama
+
+`DashboardView.java` adalah tampilan utama yang muncul setelah pengguna berhasil login, baik sebagai Admin maupun User.
+
+#### ✅ Fungsi Utama:
+
+- Menampilkan **sapaan selamat datang** dan **peran pengguna (role)**.
+- Menyesuaikan isi tampilan berdasarkan peran:
+  - 👤 **User**:
+    - Menampilkan daftar menu yang tersedia dan harganya (dalam bentuk tabel).
+  - 👑 **Admin**:
+    - Menampilkan deskripsi peran Admin.
+    - Tombol navigasi ke halaman pengelolaan menu.
+- Menyediakan tombol **Logout** untuk kembali ke halaman login.
+- Mengatur layout dan desain tampilan dengan efek bayangan (shadow) dan styling modern.
+
+#### 🧩 Keterkaitan:
+- Menggunakan `UserOperations` untuk mengambil data profil pengguna dari database.
+- Menggunakan `TodoOperations` untuk mengambil data daftar menu dari database.
+
+```java
+package com.mycompany.javafx_dashboard_lita;
+
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.stage.Stage;
+
+public class DashboardView {
+    private Stage primaryStage;
+    private UserOperations userOperations;
+    private TodoOperations todoOperations;
+    private String username;
+
+    public DashboardView(Stage primaryStage, String username) {
+        this.primaryStage = primaryStage;
+        this.username = username;
+    }
+
+    public BorderPane getView() {
+        BorderPane root = new BorderPane();
+        root.setStyle("-fx-background-color: linear-gradient(to bottom, #ADD8E6, #E0FFFF);");
+
+        VBox container = new VBox(20);
+        container.setAlignment(Pos.CENTER);
+        container.setPadding(new Insets(30));
+        container.setMaxWidth(600);
+        container.setStyle("-fx-background-color: white; -fx-background-radius: 15px;");
+        container.setEffect(new DropShadow(10, Color.GRAY));
+
+        String userRole = "";
+        User user = null;
+        try {
+            userOperations = new UserOperations();
+            user = userOperations.getProfile(username);
+            if (user != null) {
+                userRole = user.getRole();
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DashboardView.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        Label welcomeLabel = new Label("👋 Selamat Datang, " + username + "!");
+        welcomeLabel.setFont(Font.font("Arial", FontWeight.BOLD, 24));
+        welcomeLabel.setTextFill(Color.DARKBLUE);
+
+        Label roleLabel = new Label("Role: " + userRole);
+        roleLabel.setFont(Font.font("Arial", FontWeight.NORMAL, 16));
+
+        container.getChildren().addAll(welcomeLabel, roleLabel);
+
+        if ("User".equalsIgnoreCase(userRole)) {
+            Label infoLabel = new Label("Berikut adalah daftar menu dan harga dari Admin:");
+            infoLabel.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
+
+            try {
+                todoOperations = new TodoOperations();
+                ObservableList<Todo> todos = FXCollections.observableArrayList(todoOperations.getTodos());
+
+                TableView<Todo> tableView = new TableView<>();
+                tableView.setItems(todos);
+                tableView.setMaxHeight(300);
+
+                TableColumn<Todo, String> titleColumn = new TableColumn<>("Nama Menu");
+                titleColumn.setCellValueFactory(data -> data.getValue().titleProperty());
+
+                TableColumn<Todo, String> descriptionColumn = new TableColumn<>("Harga");
+                descriptionColumn.setCellValueFactory(data -> data.getValue().descriptionProperty());
+
+                TableColumn<Todo, String> statusColumn = new TableColumn<>("Status");
+                statusColumn.setCellValueFactory(data -> {
+                    boolean isCompleted = data.getValue().isIsCompleted();
+                    return new ReadOnlyStringWrapper(isCompleted ? "Tidak Tersedia" : "Tersedia");
+                });
+
+                tableView.getColumns().addAll(titleColumn, descriptionColumn, statusColumn);
+                tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+                tableView.setStyle("-fx-background-color: white; -fx-font-size: 14px;");
+
+                container.getChildren().addAll(infoLabel, tableView);
+            } catch (SQLException ex) {
+                Logger.getLogger(DashboardView.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else if ("Admin".equalsIgnoreCase(userRole)) {
+            // Deskripsi admin dengan wrap text dan center
+            Label infoLabel = new Label("Sebagai Admin, Anda memiliki akses penuh untuk mengelola data menu. Anda dapat menambah, mengedit, menghapus, serta mengubah status ketersediaan menu.");
+            infoLabel.setWrapText(true);
+            infoLabel.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
+            infoLabel.setAlignment(Pos.CENTER);
+            infoLabel.setMaxWidth(480);
+            infoLabel.setStyle("-fx-text-alignment: center;");
+
+            // Bungkus dalam StackPane untuk efek background
+            StackPane infoPane = new StackPane(infoLabel);
+            infoPane.setPadding(new Insets(10));
+            infoPane.setMaxWidth(500);
+            infoPane.setStyle("-fx-background-color: rgba(255,255,255,0.7); -fx-background-radius: 10;");
+            infoPane.setEffect(new DropShadow(4, Color.LIGHTGRAY));
+
+            Button todoButton = new Button("Kelola Menu");
+            todoButton.setStyle(
+                    "-fx-background-color: #00008B;" +
+                    "-fx-text-fill: white;" +
+                    "-fx-font-size: 14px;" +
+                    "-fx-padding: 8px 16px;" +
+                    "-fx-background-radius: 10px;"
+            );
+
+            todoButton.setOnAction(e -> {
+                TodoView todoView = new TodoView(primaryStage, username);
+                primaryStage.setScene(new Scene(todoView.getView(), 800, 600));
+            });
+
+            container.getChildren().addAll(infoPane, todoButton);
+        }
+
+        Button logoutButton = new Button("Logout");
+        logoutButton.setStyle(
+                "-fx-background-color: #00008B;" +
+                "-fx-text-fill: white;" +
+                "-fx-font-size: 14px;" +
+                "-fx-padding: 8px 16px;" +
+                "-fx-background-radius: 10px;"
+        );
+
+        logoutButton.setOnAction(e -> {
+            LoginView loginView = new LoginView(primaryStage);
+            primaryStage.setScene(new Scene(loginView.getView(), 800, 600));
+        });
+
+        container.getChildren().add(logoutButton);
+        root.setCenter(container);
+
+        return root;
+    }
+}
+```
+
+---
+
+## 📄 `TodoView.java` - Halaman Manajemen Menu (Admin)
+
+`TodoView.java` adalah tampilan utama **khusus untuk Admin** yang digunakan untuk **mengelola daftar menu** makanan/minuman. File ini:
+
+- Menampilkan semua data menu dari database dalam bentuk tabel
+- Menyediakan tombol-tombol aksi untuk Admin:  
+- ➕ Tambah Menu  
+- ✏️ Edit Menu  
+- 🗑 Hapus Menu  
+- 🔄 Ubah Status (Tersedia / Tidak Tersedia)  
+- Terhubung dengan database melalui `TodoOperations`  
+- Hanya pengguna dengan role `Admin` yang bisa melihat & mengelola menu
+
+```java
+package com.mycompany.javafx_dashboard_lita;
+
+import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+
+import java.sql.SQLException;
+
+public class TodoView {
+    private TodoOperations todoOperations;
+    private TableView<Todo> tableView;
+    private ObservableList<Todo> todoList;
+    private Stage primaryStage;
+    private String username;
+    private String userRole;
+
+    public TodoView(Stage primaryStage, String username) {
+        this.primaryStage = primaryStage;
+        this.username = username;
+
+        try {
+            todoOperations = new TodoOperations();
+            todoList = FXCollections.observableArrayList(todoOperations.getTodos());
+
+            UserOperations userOperations = new UserOperations();
+            User user = userOperations.getProfile(username);
+            if (user != null) {
+                userRole = user.getRole();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showError("Error loading todos: " + e.getMessage());
+        }
+    }
+
+    public BorderPane getView() {
+        BorderPane root = new BorderPane();
+        root.setStyle("-fx-background-color: linear-gradient(to bottom, #ADD8E6, #E0FFFF);");
+
+        VBox menu = new VBox(20);
+        menu.setPadding(new Insets(20));
+        menu.setStyle("-fx-background-color: white; -fx-background-radius: 15px; -fx-border-radius: 15px;");
+        menu.setEffect(new DropShadow(10, Color.GRAY));
+
+        Label titleLabel = new Label(" Menu Admin");
+        titleLabel.setFont(Font.font("Arial", FontWeight.BOLD, 18));
+
+        Button dashboardButton = new Button("🏠 Dashboard");
+        dashboardButton.setStyle(buttonStyle());
+        dashboardButton.setOnAction(e -> {
+            DashboardView dashboardView = new DashboardView(primaryStage, username);
+            primaryStage.setScene(new Scene(dashboardView.getView(), 800, 600));
+        });
+
+        Button logoutButton = new Button("🔓 Logout");
+        logoutButton.setStyle(buttonStyle());
+        logoutButton.setOnAction(e -> {
+            LoginView loginView = new LoginView(primaryStage);
+            primaryStage.setScene(new Scene(loginView.getView(), 800, 600));
+        });
+
+        menu.getChildren().addAll(titleLabel, dashboardButton, logoutButton);
+        root.setLeft(menu);
+
+        VBox content = new VBox(10);
+        content.setPadding(new Insets(20));
+        content.setAlignment(Pos.TOP_CENTER);
+
+        tableView = new TableView<>();
+        tableView.setItems(todoList);
+        tableView.setStyle("-fx-font-size: 14px;");
+
+        TableColumn<Todo, Integer> idColumn = new TableColumn<>("ID");
+        idColumn.setCellValueFactory(data -> data.getValue().idProperty().asObject());
+
+        TableColumn<Todo, String> titleColumn = new TableColumn<>("Nama Menu");
+        titleColumn.setCellValueFactory(data -> data.getValue().titleProperty());
+
+        TableColumn<Todo, String> descriptionColumn = new TableColumn<>("Harga");
+        descriptionColumn.setCellValueFactory(data -> data.getValue().descriptionProperty());
+
+        TableColumn<Todo, String> statusColumn = new TableColumn<>("Status");
+        statusColumn.setCellValueFactory(data -> {
+            boolean isCompleted = data.getValue().isCompletedProperty().get();
+            return new ReadOnlyStringWrapper(isCompleted ? "Tidak Tersedia" : "Tersedia");
+        });
+
+        tableView.getColumns().addAll(idColumn, titleColumn, descriptionColumn, statusColumn);
+
+        if ("Admin".equalsIgnoreCase(userRole)) {
+            TableColumn<Todo, Void> actionColumn = new TableColumn<>("Actions");
+            actionColumn.setCellFactory(param -> new TableCell<>() {
+                private final Button editButton = new Button("✏️ Edit");
+                private final Button deleteButton = new Button("🗑 Hapus");
+                private final Button toggleStatusButton = new Button("🔄 Ubah Status");
+
+                {
+                    editButton.setStyle(buttonMiniStyle());
+                    deleteButton.setStyle(buttonMiniStyle());
+                    toggleStatusButton.setStyle(buttonMiniStyle());
+                }
+
+                @Override
+                protected void updateItem(Void item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty) {
+                        setGraphic(null);
+                    } else {
+                        Todo selected = getTableView().getItems().get(getIndex());
+
+                        editButton.setOnAction(event -> showTodoModal(selected));
+                        deleteButton.setOnAction(event -> {
+                            todoOperations.deleteTodo(selected.getId());
+                            refreshTable();
+                            showSuccess("Menu berhasil dihapus.");
+                        });
+                        toggleStatusButton.setOnAction(event -> {
+                            boolean newStatus = !selected.isIsCompleted();
+                            todoOperations.toggleStatus(selected.getId(), newStatus);
+                            selected.setCompleted(newStatus);
+                            tableView.refresh();
+                            showSuccess("Status berhasil diubah.");
+                        });
+
+                        HBox actions = new HBox(5, editButton, deleteButton, toggleStatusButton);
+                        setGraphic(actions);
+                    }
+                }
+            });
+            tableView.getColumns().add(actionColumn);
+
+            Button addButton = new Button("➕ Tambah Menu");
+            addButton.setStyle(buttonStyle());
+            addButton.setOnAction(e -> showTodoModal(null));
+            content.getChildren().add(addButton);
+        }
+
+        content.getChildren().add(tableView);
+        root.setCenter(content);
+        return root;
+    }
+
+    private void showTodoModal(Todo todo) {
+        Stage modalStage = new Stage();
+        modalStage.initModality(Modality.APPLICATION_MODAL);
+        modalStage.setTitle(todo == null ? "Tambah Menu" : "Edit Menu");
+
+        TextField titleField = new TextField(todo == null ? "" : todo.getTitle());
+        TextField descriptionField = new TextField(todo == null ? "" : todo.getDescription());
+
+        Button saveButton = new Button(todo == null ? "➕ Tambah" : "💾 Simpan");
+        saveButton.setStyle(buttonStyle());
+        saveButton.setOnAction(e -> {
+            if (todo == null) {
+                todoOperations.addTodo(new Todo(0, titleField.getText(), descriptionField.getText(), false, null));
+                showSuccess("Menu berhasil ditambahkan!");
+            } else {
+                todoOperations.updateTodo(todo.getId(), titleField.getText(), descriptionField.getText());
+                showSuccess("Menu berhasil diperbarui!");
+            }
+            refreshTable();
+            modalStage.close();
+        });
+
+        VBox modalContent = new VBox(10);
+        modalContent.setPadding(new Insets(10));
+        modalContent.getChildren().addAll(
+                new Label("Nama Menu:"), titleField,
+                new Label("Harga:"), descriptionField,
+                saveButton
+        );
+
+        Scene modalScene = new Scene(modalContent);
+        modalStage.setScene(modalScene);
+        modalStage.showAndWait();
+    }
+
+    private void refreshTable() {
+        todoList.setAll(todoOperations.getTodos());
+    }
+
+    private void showSuccess(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Sukses");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void showError(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private String buttonStyle() {
+        return "-fx-background-color: #00008B; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 8px 16px; -fx-background-radius: 10px;";
+    }
+
+    private String buttonMiniStyle() {
+        return "-fx-background-color: #4169E1; -fx-text-fill: white; -fx-font-size: 12px; -fx-padding: 4px 8px; -fx-background-radius: 6px;";
+    }
+}
+```
 
 
 
