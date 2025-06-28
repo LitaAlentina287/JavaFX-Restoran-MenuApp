@@ -1,0 +1,12 @@
+com\mycompany\javafx_dashboard_lita\DashboardView.class
+com\mycompany\javafx_dashboard_lita\LoginView.class
+com\mycompany\javafx_dashboard_lita\User.class
+com\mycompany\javafx_dashboard_lita\UserOperations.class
+com\mycompany\javafx_dashboard_lita\DatabaseConnection.class
+com\mycompany\javafx_dashboard_lita\Todo.class
+com\mycompany\javafx_dashboard_lita\TodoOperations.class
+com\mycompany\javafx_dashboard_lita\RegisterView.class
+com\mycompany\javafx_dashboard_lita\TodoView.class
+module-info.class
+com\mycompany\javafx_dashboard_lita\TodoView$1.class
+com\mycompany\javafx_dashboard_lita\App.class
