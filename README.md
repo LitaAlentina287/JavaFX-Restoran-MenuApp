@@ -40,6 +40,7 @@ Aplikasi Menu Restoran berbasis JavaFX yang memungkinkan pengguna (user) untuk m
 Tonton demo aplikasi di YouTube:  
 🔗 https://youtu.be/Re1OAmsgM6U?si=8rI3RT9chvWWhKJv
 
+---
 
 ## 💽 Struktur Database
 
