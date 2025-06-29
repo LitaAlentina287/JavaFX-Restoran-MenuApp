@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS todos (
 
 ## 📽️ Demo Aplikasi
 Tonton demo aplikasi di YouTube:  
-🔗 (https://youtu.be/klz2-AVIM1Q?si=6h_i4sEySB_GH3p2)
+🔗 https://youtu.be/Re1OAmsgM6U?si=8rI3RT9chvWWhKJv
 
 
 ---
