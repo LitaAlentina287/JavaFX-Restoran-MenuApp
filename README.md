@@ -35,6 +35,11 @@ Aplikasi Menu Restoran berbasis JavaFX yang memungkinkan pengguna (user) untuk m
 - User:
   - Melihat daftar menu
   - Melihat status ketersediaan
+ 
+## 📽️ Demo Aplikasi
+Tonton demo aplikasi di YouTube:  
+🔗 https://youtu.be/Re1OAmsgM6U?si=8rI3RT9chvWWhKJv
+
 
 ## 💽 Struktur Database
 
@@ -58,13 +63,6 @@ CREATE TABLE IF NOT EXISTS todos (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 ```
-
----
-
-## 📽️ Demo Aplikasi
-Tonton demo aplikasi di YouTube:  
-🔗 https://youtu.be/Re1OAmsgM6U?si=8rI3RT9chvWWhKJv
-
 
 ---
 
